@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>课时管理-学员列表</title>
+    <link th:href="@{https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css}" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{https://unpkg.com/layui@2.7.6/dist/css/layui.css}" media="all" />
+    <script th:src="@{https://cdn.bootcdn.net/ajax/libs/dayjs/1.4.1/dayjs.min.js}"/>
+    <script th:src="@{https://unpkg.com/layui@2.7.6/dist/layui.js}"></script>
+    <script th:fragment="stud_list_script" th:inline="javascript" type="text/javascript">
+        function addStudentInfo() {
+            window.location.href = '/student/info/add';
+        };
+
+        function queryStudentList(curr, pageSize, isTurnPages) {
+            let count = 0;
+            $.ajax({
+                url: '/student/query',
+                type: 'get',
+                async: false,
+                data: {
+                    className: $('#className').val(),
+                    subjectName: $('#subjectName').val(),
+                    courseStatus: $('#courseStatus').val(),
+                    studentName: $('#studentName').val(),
+                    currentPage: curr,
+                    pageSize: pageSize
+                },
+                success: function (result) {
+                    let tbody = document.getElementById('student-list');
+                    let str = ``;
+                    for (let student of result.page.records) {
+                        let term = (student.beginDate ? dayjs(student.beginDate).format('YYYY.MM.DD') : '未知 ')
+                            + ' - '
+                            + (student.endDate ? dayjs(student.endDate).format('YYYY.MM.DD') : '未知');
+                        str += `<tr>
+                                    <td>${student.className ? student.className : ''}</td>
+                                    <td><a style="color: #0d6efd" href="/student/info?subjectSno=${student.sno}&studentId=${student.id}&action=read"
+                                           >${student.studentName ? student.studentName : ''}</a></td>
+                                    <td>${student.subjectName ? student.subjectName : ''}</td>
+                                    <td>${!student.beginDate && !student.endDate ? '' : term}</td>
+                                    <td>${student.courseStatus ? result.courseStatus[student.courseStatus] : '未开始'}</td>
+                                    <td>${student.cellphone ? student.cellphone : ''}</td>
+                                    <td class="btn-operation">
+                                    <a style="color: #0d6efd" class="btn-link" href="/student/info?subjectSno=${student.sno}&studentId=${student.id}&action=edit">修改</a>&nbsp<button class="btn btn-link" type="button">签到</button></td>
+                                </tr>`;
+                    };
+                    tbody.innerHTML = str;
+                    if(isTurnPages === true){
+                        return;
+                    }
+                    const myPagination = layui.laypage;
+                    myPagination.render({
+                        elem: 'pagination',
+                        count: result.page.total,
+                        limit: 10,
+                        limits: [10, 20, 50],
+                        groups: 3,
+                        theme: '#0b5ed7',
+                        layout: ['prev', 'page', 'next', 'count', 'limit'],
+                        jump: function (obj) {
+                            queryStudentList(obj.curr, obj.limit, true);
+                        }
+                    })
+                },
+                error: function (error) {
+
+                }
+            })
+        }
+
+        layui.use('laypage', function () {
+            const myPagination = layui.laypage;
+            myPagination.render({
+                elem: 'pagination',
+                count: [[${page.total}]],
+                limit: 10,
+                limits: [10, 20, 50],
+                groups: 3,
+                theme: '#0b5ed7',
+                layout: ['prev', 'page', 'next', 'count', 'limit'],
+                jump: function (obj, first) {
+                    if(first){
+                        return;
+                    }
+                    queryStudentList(obj.curr, obj.limit, true);
+                }
+            })
+        });
+    </script>
+</head>
+<body>
+
+<main class="d-flex flex-nowrap">
+
+    <div th:fragment="student_list" style="width: 100%;overflow-y: scroll">
+        <div class="container" style="width: 90%">
+            <form id="checkout-students" novalidate>
+                <div class="row g-3">
+                    <div class="col-2 attr-name">
+                        <label for="className">班级</label>
+                    </div>
+                    <div class="col-3 text-center">
+                        <input type="text" class="form-control" id="className" name="className" placeholder="" value=""
+                               style="display: inline-block">
+                    </div>
+                    <div class="col-1 attr-name">
+                        <label for="subjectName">课程</label>
+                    </div>
+                    <div class="col-3 text-center">
+                        <input type="text" class="form-control" id="subjectName" name="subjectName" placeholder="" value=""
+                               style="display: inline-block">
+                    </div>
+                </div>
+                <div class="row g-3">
+                    <div class="col-2 attr-name">
+                        <label for="studentName">姓名</label>
+                    </div>
+                    <div class="col-3 text-center">
+                        <input type="text" class="form-control" id="studentName" name="studentName" placeholder=""
+                               value=""
+                               style="display: inline-block">
+                    </div>
+                    <div class="col-1 attr-name">
+                        <label for="courseStatus">课程状态</label>
+                    </div>
+                    <div class="col-3 text-center">
+                        <select class="form-control form-select" id="courseStatus" name="courseStatus">
+                            <option selected></option>
+                            <option value="0">未开始</option>
+                            <option value="1">进行中</option>
+                            <option value="2">已完结</option>
+                        </select>
+                    </div>
+                    <div class="col-3">
+                        <button class="btn btn-primary" type="button" th:onclick="queryStudentList()"
+                                style="margin-left: 40px;width: 80px">查询
+                        </button>
+                        <button class="btn btn-primary" type="button" style="margin-left: 40px;width: 80px">重置</button>
+                    </div>
+                </div>
+            </form>
+
+            <button type="button" class="btn btn-primary"
+                    style="margin-bottom: 1.2rem;margin-left: 1.2rem" th:onclick="addStudentInfo()">
+                新增
+            </button>
+            <table class="table table-bordered table-striped table-hover align-middle text-center">
+                <thead>
+                <tr>
+                    <th scope="col">班级</th>
+                    <th scope="col">姓名</th>
+                    <th scope="col">课程</th>
+                    <th scope="col" style="width: 20%">学期</th>
+                    <th scope="col">课程状态</th>
+                    <th scope="col">联系方式</th>
+                    <th scope="col">操作</th>
+                </tr>
+                </thead>
+                <tbody id="student-list">
+                <tr th:each="student : ${page.records}">
+                    <td th:text="${student.className} ? ${student.className} : _"></td>
+                    <td>
+                        <a style="color: #0d6efd;" th:href="@{/student/info(subjectSno=${student.sno} ? ${student.sno} : '', studentId=${student.id}, action=read)}"
+                           th:text="${student.studentName} ? ${student.studentName} : _"/></td>
+                    <td th:text="${student.subjectName} ? ${student.subjectName} : _"></td>
+                    <td th:text="!${student.beginDate} and !${student.endDate} ? '' : (${student.beginDate} ? ${#calendars.format(student.beginDate, 'yyyy.MM.dd')} : '未知')
+                    + ' - '
+                    + (${student.endDate} ? ${#calendars.format(student.endDate, 'yyyy.MM.dd')} : '未知')"></td>
+                    <td th:text="${student.courseStatus} ? ${courseStatus[student.courseStatus]} : '未开始'"></td>
+                    <td th:text="${student.cellphone} ? ${student.cellphone} : _"></td>
+                    <td class="btn-operation">
+                        <a style="color: #0d6efd" class="btn-link" th:href="@{/student/info(subjectSno=${student.sno} ? ${student.sno} : '', studentId=${student.id}, action='edit')}">修改</a>&nbsp
+                        <button class="btn btn-link" type="button">签到</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <div id="pagination" class="text-center" style="margin-top: 1rem;"></div>
+        </div>
+    </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>课时管理-学员详情</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script th:fragment="stud_info_script" th:inline="javascript" type="text/javascript">
+        $(function () {
+            const form = document.getElementById('student-info');
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                };
+                form.classList.add('was-validated');
+            }, false);
+
+            const toastLive = document.getElementById('liveToast');
+            const toast = new bootstrap.Toast(toastLive);
+            if([[${saveResult}]]){
+                toast.show();
+            }
+        });
+
+        function goback() {
+            window.location.href = '/student/list';
+        };
+
+        // function save() {
+        //     let form = document.getElementById('student-info');
+        //     form.addEventListener('submit', event => {
+        //         if (!form.checkValidity()) {
+        //             console.log('校验')
+        //             event.preventDefault()
+        //             event.stopPropagation()
+        //         }
+        //         form.classList.add('was-validated')
+        //     }, false)
+        //
+        //     var a = {'studentName': '张三'};
+        //     $.ajax({
+        //         url: '/student/save',
+        //         type: 'post',
+        //         data: JSON.stringify(a),
+        //         contentType: 'application/json',
+        //         success: function (result) {
+        //             const toastLive = document.getElementById('liveToast');
+        //             const toast = new bootstrap.Toast(toastLive);
+        //             toast.show();
+        //         },
+        //         error: function () {
+        //
+        //         }
+        //     })
+        // };
+
+        function remove() {
+
+        };
+    </script>
+</head>
+<body>
+<main class="d-flex flex-nowrap">
+
+    <div th:fragment="student_info" class="container" style="width: 80%">
+        <form id="student-info" action="/student/save" method="post"
+              th:class="${params.action == 'edit'} ? (${student.id} ? 'was-validated needs-validation' : 'needs-validation') : _" novalidate>
+            <div>
+                <button type="button" class="btn btn-primary" style="margin-top: 20px"
+                        th:onclick="goback()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                         class="bi bi-arrow-left" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd"
+                              d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+                    </svg>
+                    返回上一级
+                </button>
+                <button type="button" class="btn btn-danger" style="float: right;margin-right: 2%;margin-top: 20px"
+                        th:if="${params.action == 'edit'} ? true : false"
+                        th:onclick="remove()">删除
+                </button>
+                <button type="submit" class="btn btn-primary" style="float: right;margin-right: 2%;margin-top: 20px"
+                        th:if="${params.action == 'edit'} ? true : false">保存
+                </button>
+            </div>
+            <input th:hidden="true" name="id" th:value="${student.id}"/>
+            <input th:hidden="true" name="sno" th:value="${subject.sno}"/>
+            <input th:hidden="true" name="studentId" th:value="${student.id}"/>
+            <div id="student-baseinfo" class="card">
+                <div class="card-header">
+                    <b style="line-height: 200%">基本信息</b>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-1 attr-name">
+                            <label>姓名:</label>
+                        </div>
+                        <div class="col-2">
+                            <input type="text" class="form-control" name="studentName"
+                                   th:value="${student.studentName}"
+                                   th:disabled="${params.action == 'edit'} ? false : true" required>
+                        </div>
+                        <div class="col-1 attr-name">
+                            <label>性别:</label>
+                        </div>
+                        <div class="col-2">
+                            <select class="form-control form-select" name="sex" th:disabled="${params.action == 'edit'} ? false : true">
+                                <option th:selected="${student.sex == 0}" value="0">女</option>
+                                <option th:selected="${student.sex == 1}" value="1">男</option>
+                            </select>
+                        </div>
+                        <div class="col-1 attr-name">
+                            <label>年龄(岁):</label>
+                        </div>
+                        <div class="col-2">
+                            <input type="text" class="form-control" name="age"
+                                   th:value="${student.age}" th:disabled="${params.action == 'edit'} ? false : true">
+                        </div>
+                        <div class="col-1 attr-name">
+                            <label>爱好:</label>
+                        </div>
+                        <div class="col-2">
+                            <input type="text" class="form-control" name="hobby"
+                                   th:value="${student.hobby}" th:disabled="${params.action == 'edit'} ? false : true">
+                        </div>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-1 attr-name">
+                            <label>父母:</label>
+                        </div>
+                        <div class="col-5">
+                            <input type="text" class="form-control" name="parent"
+                                   th:value="${student.parent}" th:disabled="${params.action == 'edit'} ? false : true">
+                        </div>
+                        <div class="col-1 attr-name">
+                            <label>联系方式:</label>
+                        </div>
+                        <div class="col-5">
+                            <input type="text" class="form-control" name="cellphone"
+                                   th:value="${student.cellphone}"
+                                   th:disabled="${params.action == 'edit'} ? false : true">
+                        </div>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-1 attr-name">
+                            <label>幼儿园:</label>
+                        </div>
+                        <div class="col-5">
+                            <input type="text" class="form-control" name="kindergarten"
+                                   th:value="${student.kindergarten}"
+                                   th:disabled="${params.action == 'edit'} ? false : true">
+                        </div>
+                        <div class="col-1 attr-name">
+                            <label>家挺住址:</label>
+                        </div>
+                        <div class="col-5">
+                            <input type="text" class="form-control" name="address"
+                                   th:value="${student.address}" th:disabled="${params.action == 'edit'} ? false : true">
+                        </div>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-1 attr-name">
+                            <label>备注:</label>
+                        </div>
+                        <div class="col-5">
+                            <input type="text" class="form-control" name="studentRemark"
+                                   th:value="${student.studentRemark}"
+                                   th:disabled="${params.action == 'edit'} ? false : true">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <b style="line-height: 200%">课程信息</b>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-1 attr-name">
+                            <label>课程:</label>
+                        </div>
+                        <div class="col-2">
+                            <input type="text" class="form-control" name="subjectName"
+                                   th:value="${subject.subjectName}"
+                                   th:disabled="${params.action == 'edit'} ? false : true">
+                        </div>
+                        <div class="col-1 attr-name">
+                            <label>班级:</label>
+                        </div>
+                        <div class="col-2">
+                            <input type="text" class="form-control" name="className"
+                                   th:value="${subject.className}"
+                                   th:disabled="${params.action == 'edit'} ? false : true">
+                        </div>
+                        <div class="col-1 attr-name">
+                            <label>剩余课时:</label>
+                        </div>
+                        <div class="col-2">
+                            <input type="text" class="form-control" name="remainHours"
+                                   th:value="${subject.remainHours}"
+                                   th:disabled="${params.action == 'edit'} ? false : true">
+                        </div>
+                        <div class="col-1 attr-name">
+                            <label>总课时:</label>
+                        </div>
+                        <div class="col-2">
+                            <input type="text" class="form-control" name="totalHours"
+                                   th:value="${subject.totalHours}"
+                                   th:disabled="${params.action == 'edit'} ? false : true">
+                        </div>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-1 attr-name">
+                            <label>学期:</label>
+                        </div>
+                        <div class="col-2">
+                            <input type="date" class="form-control" name="beginDate"
+                                   th:value="${#dates.format(subject.beginDate, 'yyyy-MM-dd')}"
+                                   th:disabled="${params.action == 'edit'} ? false : true">
+                        </div>
+                        <div class="col-1 middle-attr">
+                            <label>至</label>
+                        </div>
+                        <div class="col-2">
+                            <input type="date" class="form-control" name="endDate"
+                                   th:value="${#dates.format(subject.endDate, 'yyyy-MM-dd')}" th:disabled="${params.action == 'edit'} ? false : true">
+                        </div>
+                        <div class="col-1 attr-name">
+                            <label>积分:</label>
+                        </div>
+                        <div class="col-2">
+                            <input type="text" class="form-control" name="points"
+                                   th:value="${subject.points}" th:disabled="${params.action == 'edit'} ? false : true">
+                        </div>
+                        <div class="col-1 attr-name">
+                            <label>会员等级:</label>
+                        </div>
+                        <div class="col-2">
+                            <input type="text" class="form-control" name="level"
+                                   th:value="${subject.level}" th:disabled="${params.action == 'edit'} ? false : true">
+                        </div>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-1 attr-name">
+                            <label>备注:</label>
+                        </div>
+                        <div class="col-5">
+                            <input type="text" class="form-control" name="subjectRemark"
+                                   th:value="${subject.subjectRemark}"
+                                   th:disabled="${params.action == 'edit'} ? false : true">
+                        </div>
+                        <div class="col-1 attr-name">
+                            <label>课程状态:</label>
+                        </div>
+                        <div class="col-2">
+                            <select class="form-control form-select" name="courseStatus"
+                                    th:disabled="${params.action == 'edit'} ? false : true">
+                                <option th:selected="${subject.courseStatus == 0}" value="0">未开始</option>
+                                <option th:selected="${subject.courseStatus == 1}" value="1">进行中</option>
+                                <option th:selected="${subject.courseStatus == 2}" value="2">已完结</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div class="toast-container position-fixed bottom-0 end-0 p-3">
+            <div id="liveToast" class="toast align-items-center text-bg-success border-0"
+                 role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">保存成功!</div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

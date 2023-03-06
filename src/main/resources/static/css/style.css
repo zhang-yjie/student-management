@@ -1,0 +1,93 @@
+/*body {*/
+/*    min-height: 100vh;*/
+/*    min-height: -webkit-fill-available;*/
+/*}*/
+
+/*html {*/
+/*    height: -webkit-fill-available;*/
+/*}*/
+
+main {
+    height: 100vh;
+    /*height: -webkit-fill-available;*/
+    max-height: 100vh;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.dropdown-toggle {
+    outline: 0;
+}
+
+.btn-toggle-nav a {
+    padding: .1875rem .5rem;
+    margin-top: .125rem;
+    margin-left: 1.25rem;
+}
+
+.btn-toggle-nav a:hover,
+.btn-toggle-nav a:focus {
+    background-color: #d2f4ea;
+}
+
+@media (min-width: 768px) {
+    .bd-placeholder-img-lg {
+        font-size: 3.5rem;
+    }
+}
+
+.bi {
+    vertical-align: -.125em;
+    fill: currentColor;
+}
+
+.nav-scroller .nav {
+    display: flex;
+    flex-wrap: nowrap;
+    padding-bottom: 1rem;
+    margin-top: -1px;
+    overflow-x: auto;
+    text-align: center;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+}
+
+.themed-grid-col {
+    padding-top: .75rem;
+    padding-bottom: .75rem;
+    background-color: rgba(86, 61, 124, .15);
+    border: 1px solid rgba(86, 61, 124, .2);
+}
+
+#checkout-students {
+    margin-top: 2.5rem;
+    margin-bottom: 2rem;
+}
+
+.row {
+    margin: auto;
+    width: 100%;
+}
+
+.attr-name {
+    display: flex;
+    justify-content: right;
+    align-items: center;
+}
+
+.btn-operation {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#student-baseinfo {
+    margin-top: 20px;
+    margin-bottom: 30px;
+}
+
+.middle-attr {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
